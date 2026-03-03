@@ -4,11 +4,11 @@ import { connectMDB } from "./config/database.config.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.PORT || 3001;
 
 const launchServer = async () => {
   try {
-    await connectMDB();  
+    await connectMDB();
     app.listen(PORT, () => {
       console.log(`Server launch at http://localhost:${PORT}`);
     });

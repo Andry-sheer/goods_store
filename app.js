@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended : true }))
 
 app.use('/', router)
 
-// 404
+
 app.use((req, res)=> {
   res.status(404).json({
     status : 404,
@@ -22,7 +22,7 @@ app.use((req, res)=> {
   })
 });
 
-// 500
+
 app.use((err, req, res, next)=> {
   console.error(err.stack);
   res.status(500).json({
