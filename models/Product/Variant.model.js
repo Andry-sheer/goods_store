@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import priceSchema from './Price.model.js'
+import priceSchema from './Price.model.js';
+import { ramValidate, formatSize, memoryValidate } from "../../utils/memory.utils.js";
 
 
 const variantSchema = new mongoose.Schema({
@@ -11,18 +12,56 @@ const variantSchema = new mongoose.Schema({
 
   memory: {
     type: Number,
-    min: [1, "memory min 1 GB"],
-    max : [192, "memory max 192 GB"],
-    get : value => `${value}GB`
+    required : true,
+    min: [1, "Min memory 1 MB"],
+    max : [67108864, "memory max 64 TB"],
+    set : (value) => {
+      if (typeof value === 'object' && value.unit) {
+        const resultMemory = memoryValidate(value.value, value.unit);
+        if (!resultMemory.isValid) throw new Error(resultMemory.message);
+        return resultMemory.value;
+      }
+
+      throw new Error('Memory must be an object {value, unit}')
+    }
   },
 
   ram : {
     type: Number,
-    min: [1],
-    max : [48],
-    set : ()=> {},
-    get : ()=> {}
+    required : true,
+    min: [1, "Min RAM 1 MB"],
+    max : [196608, "Max RAM 192 GB"],
+    set : (value)=> {
+      if (typeof value === "object" && value.unit) {
+        const resultRam = ramValidate(value.value, value.unit);
+        if (!resultRam.isValid) throw new Error(resultRam.message);
+        return resultRam.value;
+      }
+
+      throw new Error('Invalid RAM format')
+    }
   },
+
+  images : [{
+    url : {
+      type : String,
+      required : [true, "Image URL is required"],
+      trim : true
+    },
+    alt : {
+      type : String,
+      trim : true,
+      default : "product image"
+    },
+    isMain : {
+      type : Boolean,
+      default : false
+    },
+    order : {
+      type : Number,
+      default : 0
+    }
+  }],
 
   price: {
     type: priceSchema,
@@ -36,6 +75,21 @@ const variantSchema = new mongoose.Schema({
     default: 0
   }
 
-}, { _id: false });
+}, { 
+  _id: false,
+  toJSON : {
+    transform : (document, formatting) => {
+      if (formatting.ram) {
+        formatting.ramFormatted = formatSize(formatting.ram);
+      }
+
+      if (formatting.memory) {
+        formatting.memoryFormatted = formatSize(formatting.memory)
+      }
+
+      return formatting;
+    }
+  }
+});
 
 export default variantSchema;

@@ -28,9 +28,6 @@ priceSchema.virtual("hasDiscount").get(function() {
 priceSchema.virtual("discountPercent").get(function() {
   if (!this.old) return 0;
   return Math.round(((this.old - this.current) / this.old) * 100);
-}).set(function(percent){
-  if (!this.old) this.old = this.current;
-  this.current = Math.round(this.old * (1 - percent / 100))
 });
 
 priceSchema.virtual("discountAmount").get(function() {

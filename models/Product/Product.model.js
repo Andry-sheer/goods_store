@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import BasicModel from "./Basic.model.js";
-import priceSchema from "./Price.model.js";
+import variantSchema from "./Variant.model.js";
 
 const productSchema = new mongoose.Schema({
   basic : {
@@ -8,29 +8,24 @@ const productSchema = new mongoose.Schema({
     required : true,
   },
 
-  price : {
-    type : priceSchema,
-    required : true
-  },
-
-  color : [{
-    type : String,
+  variants : [{
+    type : variantSchema,
     required : true,
-    trim : true,
-    minlength : [3, "color must have min 3 charts"],
-    maxlength : [15, "color must hame max 15 charts"],
-    lowercase : true
-  }]
+    validate : {
+      validator : function (variants) {
+        return variants.length > 0;
+      },
+      message : 'Product must have at least one variant'
+    }
+  }],
 
 }, {
   optimisticConcurrency : true,
   timestamps : true
 });
 
-productSchema.index({
-  "basic.model": 1,
-  "variants.color": 1,
-  "variants.memory": 1
-});
+productSchema.index({ "basic.brand": 1, "basic.model": 1,});
+productSchema.index({ "variants.color": 1 });
+productSchema.index({ "variants.memory": 1 });
 
 export default mongoose.model('Product', productSchema);

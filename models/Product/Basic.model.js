@@ -26,12 +26,23 @@ const basicSchema = new mongoose.Schema({
     maxlength : [20, "model must hame max 20 charts"],
     lowercase : true
   },
+  os : {
+    type : String,
+    required : false,
+    trim : true,
+    lowercase : true
+  },
+  releaseYear : {
+    type : Number,
+    min : [2000, "Min release year: 2000"],
+    max : [2077, "Max release year: 2077"]
+  },
   description : {
     type : String,
     required : false,
     trim : true,
-    minlength : [3, "description must have min 3 charts"],
-    maxlength : [2000, "description must hame max 2000 charts"],
+    minlength : [0, "description must have min 0 charts"],
+    maxlength : [5000, "description must hame max 5000 charts"],
     lowercase : true,
     default : "No description"
   },
