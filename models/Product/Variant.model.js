@@ -1,9 +1,21 @@
 import mongoose from "mongoose";
 import priceSchema from './Price.model.js';
 import { ramValidate, formatSize, memoryValidate } from "../../utils/memory.utils.js";
+import processorSchema from "./Processor.model.js";
+import batterySchema from "./Battery.model.js";
+import connectivitySchema from "./Connectivity.model.js";
 
 
 const variantSchema = new mongoose.Schema({
+  slug: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    index: true
+  },
+
   color: {
     type: String,
     lowercase: true,
@@ -12,7 +24,7 @@ const variantSchema = new mongoose.Schema({
 
   memory: {
     type: Number,
-    required : true,
+    required : false,
     min: [1, "Min memory 1 MB"],
     max : [67108864, "memory max 64 TB"],
     set : (value) => {
@@ -22,13 +34,13 @@ const variantSchema = new mongoose.Schema({
         return resultMemory.value;
       }
 
-      throw new Error('Memory must be an object {value, unit}')
+      throw new Error('Memory must be an object {value, unit}');
     }
   },
 
   ram : {
     type: Number,
-    required : true,
+    required : false,
     min: [1, "Min RAM 1 MB"],
     max : [196608, "Max RAM 192 GB"],
     set : (value)=> {
@@ -42,6 +54,15 @@ const variantSchema = new mongoose.Schema({
     }
   },
 
+  processor : {
+    type : processorSchema,
+    required : false
+  },
+
+  connectivity : connectivitySchema,
+
+  battery : batterySchema,
+
   images : [{
     url : {
       type : String,
@@ -51,6 +72,7 @@ const variantSchema = new mongoose.Schema({
     alt : {
       type : String,
       trim : true,
+      lowercase : true,
       default : "product image"
     },
     isMain : {

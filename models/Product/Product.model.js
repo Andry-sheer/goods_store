@@ -27,5 +27,6 @@ const productSchema = new mongoose.Schema({
 productSchema.index({ "basic.brand": 1, "basic.model": 1,});
 productSchema.index({ "variants.color": 1 });
 productSchema.index({ "variants.memory": 1 });
+productSchema.index({ "variants.slug": 1 });
 
 export default mongoose.model('Product', productSchema);
